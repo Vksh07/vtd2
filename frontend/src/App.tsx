@@ -42,6 +42,8 @@ function App() {
   const [history, setHistory] = useState<ScoreEntry[]>([])
   const [topic, setTopic] = useState('General')
   const [count, setCount] = useState(3)
+  const [secondsLeft, setSecondsLeft] = useState(0)
+  const [timerActive, setTimerActive] = useState(false)
   const [headline, setHeadline] = useState('')
   const [currentAffairs, setCurrentAffairs] = useState<CurrentAffairsResponse | null>(null)
   const [currentAffairsLoading, setCurrentAffairsLoading] = useState(false)
@@ -71,6 +73,18 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!timerActive || secondsLeft <= 0) {
+      if (secondsLeft <= 0 && timerActive) {
+        setTimerActive(false)
+        submitDrill()
+      }
+      return
+    }
+    const id = window.setInterval(() => setSecondsLeft((s) => s - 1), 1000)
+    return () => window.clearInterval(id)
+  }, [timerActive, secondsLeft])
+
   const saveScore = (score: number, total: number) => {
     const entry: ScoreEntry = {
       date: new Date().toISOString().split('T')[0],
@@ -92,6 +106,8 @@ function App() {
     setSubmitted(false)
     setSelected({})
     setScore(0)
+    setSecondsLeft(0)
+    setTimerActive(false)
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8001'}/csat/drill`, {
         method: 'POST',
@@ -100,6 +116,8 @@ function App() {
       })
       const data = await res.json()
       setDrill(data)
+      setSecondsLeft(Math.max(60, data.length * 30))
+      setTimerActive(true)
     } catch (e) {
       console.error(e)
     } finally {
@@ -209,6 +227,9 @@ function App() {
               onChange={(e) => setCount(Number(e.target.value))}
               className="mt-4 ml-2 w-16 rounded border p-2"
             />
+            {timerActive && (
+              <p className="mt-2 text-sm text-gray-600">Time left: {secondsLeft}s</p>
+            )}
             <button onClick={startDrill} className="mt-4 ml-2 rounded bg-gray-900 px-4 py-2 text-white">
               {drillLoading ? 'Loading...' : 'Start Drill'}
             </button>
