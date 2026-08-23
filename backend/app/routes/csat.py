@@ -22,7 +22,7 @@ BANK = [
     DrillItem(id=3, topic="Percentages", prompt="What is 15% of 240?", options=["30", "36", "40", "45"], answer="B", explanation="15% of 240 = 0.15 * 240 = 36."),
     DrillItem(id=4, topic="Ratio", prompt="The ratio of A:B is 3:2 and B:C is 4:3. Find A:C.", options=["2:1", "3:2", "4:3", "6:5"], answer="A", explanation="Scale to common B: 3:2 :: 6:4, so A:C = 6:4 = 3:2."),
     DrillItem(id=5, topic="Averages", prompt="Average of 4 numbers is 20. Sum is?", options=["60", "70", "80", "90"], answer="C", explanation="Sum = average * count = 20 * 4 = 80."),
-    DrillItem(id=6, topic="Number System", prompt="What is the remainder when 245 is divided by 7?", options=["1", "2", "3", "4"], answer="A", explanation="245 is divisible by 7, so remainder is 0."),
+    DrillItem(id=6, topic="Number System", prompt="What is the remainder when 123 is divided by 8?", options=["1", "2", "3", "4"], answer="C", explanation="8 * 15 = 120; 123 - 120 = 3."),
     DrillItem(id=7, topic="Time Speed Distance", prompt="If speed is doubled, time taken becomes?", options=["Half", "Double", "Same", "Triple"], answer="A", explanation="Time is inversely proportional to speed for fixed distance."),
     DrillItem(id=8, topic="Percentages", prompt="If 40% of a number is 80, the number is?", options=["180", "200", "220", "240"], answer="B", explanation="Number = 80 / 0.40 = 200."),
     DrillItem(id=9, topic="Ratio", prompt="Divide 100 in the ratio 2:3. Larger part is?", options=["40", "50", "60", "70"], answer="C", explanation="2+3=5 parts; larger part = 3/5 * 100 = 60."),
