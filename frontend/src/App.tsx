@@ -38,6 +38,7 @@ function App() {
   const [selected, setSelected] = useState<Record<number, string>>({})
   const [submitted, setSubmitted] = useState(false)
   const [score, setScore] = useState(0)
+  const [ethicsQuestion, setEthicsQuestion] = useState('')
   const [ethics, setEthics] = useState<EthicsTemplate | null>(null)
   const [ethicsLoading, setEthicsLoading] = useState(false)
   const [history, setHistory] = useState<ScoreEntry[]>([])
@@ -162,7 +163,7 @@ function App() {
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8001'}/ethics/template`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: 'General ethics' }),
+        body: JSON.stringify({ question: ethicsQuestion || 'General ethics' }),
       })
       if (!res.ok) throw new Error(`Template failed: ${res.status}`)
       const data = await res.json()
@@ -293,7 +294,13 @@ function App() {
           <section>
             <h2 className="text-lg font-medium">Ethics Template</h2>
             <p className="mt-2 text-gray-600">Generate answer skeletons fast.</p>
-            <button onClick={generateEthics} className="mt-4 rounded bg-gray-900 px-4 py-2 text-white">
+            <input
+              value={ethicsQuestion}
+              onChange={(e) => setEthicsQuestion(e.target.value)}
+              placeholder="Ethics question or topic"
+              className="mt-4 w-full rounded border p-2"
+            />
+            <button onClick={generateEthics} className="mt-2 rounded bg-gray-900 px-4 py-2 text-white">
               {ethicsLoading ? 'Loading...' : 'Generate Template'}
             </button>
             {ethicsError && <p className="mt-2 text-sm text-red-600">{ethicsError}</p>}
