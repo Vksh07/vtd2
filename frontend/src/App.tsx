@@ -14,6 +14,7 @@ interface DrillItem {
   prompt: string
   options: string[]
   answer: string
+  explanation: string
 }
 
 interface EthicsTemplate {
@@ -248,7 +249,10 @@ function App() {
                       ))}
                     </ul>
                     {submitted && (
-                      <p className="mt-2 text-sm text-gray-500">Answer: {q.answer}</p>
+                      <div className="mt-2 text-sm text-gray-600">
+                        <p>Answer: {q.answer}</p>
+                        <p>{q.explanation}</p>
+                      </div>
                     )}
                   </div>
                 ))}
