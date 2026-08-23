@@ -48,9 +48,14 @@ function App() {
   const [headline, setHeadline] = useState('')
   const [currentAffairs, setCurrentAffairs] = useState<CurrentAffairsResponse | null>(null)
   const [currentAffairsLoading, setCurrentAffairsLoading] = useState(false)
+  const [currentAffairsError, setCurrentAffairsError] = useState('')
   const [name, setName] = useState('')
   const [goal, setGoal] = useState('')
   const [profileSaved, setProfileSaved] = useState(false)
+  const [homeError, setHomeError] = useState('')
+  const [csatError, setCsatError] = useState('')
+  const [ethicsError, setEthicsError] = useState('')
+  const [submittedOnce, setSubmittedOnce] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('neuroprep_scores')
@@ -76,15 +81,18 @@ function App() {
 
   useEffect(() => {
     if (!timerActive || secondsLeft <= 0) {
-      if (secondsLeft <= 0 && timerActive) {
+      if (secondsLeft <= 0 && timerActive && drill.length > 0) {
         setTimerActive(false)
         submitDrill()
+      }
+      if (secondsLeft <= 0) {
+        setTimerActive(false)
       }
       return
     }
     const id = window.setInterval(() => setSecondsLeft((s) => s - 1), 1000)
     return () => window.clearInterval(id)
-  }, [timerActive, secondsLeft])
+  }, [timerActive, secondsLeft, drill.length, submitDrill])
 
   const saveScore = (score: number, total: number) => {
     const entry: ScoreEntry = {
@@ -109,18 +117,22 @@ function App() {
     setScore(0)
     setSecondsLeft(0)
     setTimerActive(false)
+    setCsatError('')
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8001'}/csat/drill`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, count }),
       })
+      if (!res.ok) throw new Error(`Drill failed: ${res.status}`)
       const data = await res.json()
+      if (!Array.isArray(data) || data.length === 0) throw new Error('No questions returned.')
       setDrill(data)
       setSecondsLeft(Math.max(60, data.length * 30))
       setTimerActive(true)
-    } catch (e) {
-      console.error(e)
+    } catch (e: any) {
+      setCsatError(e?.message || 'Failed to load drill.')
+      setDrill([])
     } finally {
       setDrillLoading(false)
     }
@@ -132,27 +144,31 @@ function App() {
   }
 
   const submitDrill = () => {
+    if (!drill.length) return
     let s = 0
     drill.forEach((q) => {
       if (selected[q.id] === q.answer) s += 1
     })
     setScore(s)
     setSubmitted(true)
+    setSubmittedOnce(true)
     saveScore(s, drill.length)
   }
 
   const generateEthics = async () => {
     setEthicsLoading(true)
+    setEthicsError('')
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8001'}/ethics/template`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: 'General ethics' }),
       })
+      if (!res.ok) throw new Error(`Template failed: ${res.status}`)
       const data = await res.json()
       setEthics(data)
-    } catch (e) {
-      console.error(e)
+    } catch (e: any) {
+      setEthicsError(e?.message || 'Failed to load template.')
     } finally {
       setEthicsLoading(false)
     }
@@ -160,16 +176,19 @@ function App() {
 
   const mapHeadline = async () => {
     setCurrentAffairsLoading(true)
+    setCurrentAffairsError('')
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8001'}/current-affairs/map`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ headline }),
       })
+      if (!res.ok) throw new Error(`Mapping failed: ${res.status}`)
       const data = await res.json()
       setCurrentAffairs(data)
-    } catch (e) {
-      console.error(e)
+    } catch (e: any) {
+      setCurrentAffairsError(e?.message || 'Failed to map headline.')
+      setCurrentAffairs(null)
     } finally {
       setCurrentAffairsLoading(false)
     }
@@ -198,6 +217,7 @@ function App() {
               <input value={goal} onChange={(e) => setGoal(e.target.value)} placeholder="Prep goal" className="w-full rounded border p-2" />
               <button onClick={saveProfile} className="rounded bg-gray-900 px-4 py-2 text-white">Save Profile</button>
               {profileSaved && <p className="text-sm text-gray-500">Profile saved locally.</p>}
+              {homeError && <p className="text-sm text-red-600">{homeError}</p>}
             </div>
             {history.length > 0 && (
               <div className="mt-6">
@@ -261,6 +281,10 @@ function App() {
                 ) : (
                   <p className="font-medium">Score: {score} / {drill.length}</p>
                 )}
+                {submittedOnce && !submitted && drill.length > 0 && (
+                  <p className="text-sm text-gray-500">Timer ended. Submit to see score.</p>
+                )}
+                {csatError && <p className="text-sm text-red-600">{csatError}</p>}
               </div>
             )}
           </section>
@@ -272,6 +296,7 @@ function App() {
             <button onClick={generateEthics} className="mt-4 rounded bg-gray-900 px-4 py-2 text-white">
               {ethicsLoading ? 'Loading...' : 'Generate Template'}
             </button>
+            {ethicsError && <p className="mt-2 text-sm text-red-600">{ethicsError}</p>}
             {ethics && (
               <div className="mt-4 space-y-2">
                 <p className="font-medium">Intro</p>
@@ -301,6 +326,7 @@ function App() {
             <button onClick={mapHeadline} className="mt-2 rounded bg-gray-900 px-4 py-2 text-white">
               {currentAffairsLoading ? 'Loading...' : 'Map Headline'}
             </button>
+            {currentAffairsError && <p className="mt-2 text-sm text-red-600">{currentAffairsError}</p>}
             {currentAffairs && (
               <div className="mt-4 space-y-2">
                 <p className="font-medium">GS Mapping</p>
