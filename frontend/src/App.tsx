@@ -307,6 +307,21 @@ function App() {
             <button onClick={startDrill} className="mt-4 ml-2 rounded bg-gray-900 px-4 py-2 text-white">
               {drillLoading ? 'Loading...' : 'Start Drill'}
             </button>
+            {(() => {
+              const entries = Object.entries(topicStats).map(([topic, stat]) => ({ topic, total: stat.total, correct: stat.correct, accuracy: stat.total ? stat.correct / stat.total : 0 }))
+              const weak = entries.filter(e => e.accuracy < 0.7).sort((a, b) => a.accuracy - b.accuracy).slice(0, 3)
+              if (weak.length === 0) return null
+              return (
+                <div className="mt-4 rounded border border-red-200 bg-red-50 p-3">
+                  <p className="text-sm font-medium text-red-700">Suggested focus</p>
+                  <ul className="mt-1 list-disc pl-5 text-gray-700">
+                    {weak.map((item) => (
+                      <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% — practice this topic</li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            })()}
             {drill.length > 0 ? (
               <div className="mt-4 space-y-3">
                 {drill.map((q) => (
