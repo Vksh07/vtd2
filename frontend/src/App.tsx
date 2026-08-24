@@ -82,7 +82,8 @@ function App() {
 
   useEffect(() => {
     if (!timerActive || secondsLeft <= 0) {
-      if (secondsLeft <= 0 && timerActive && drill.length > 0) {
+      if (secondsLeft <= 0 && timerActive && drill.length > 0 && !autoSubmittedRef.current) {
+        autoSubmittedRef.current = true
         setTimerActive(false)
         submitDrill()
       }
@@ -93,7 +94,7 @@ function App() {
     }
     const id = window.setInterval(() => setSecondsLeft((s) => s - 1), 1000)
     return () => window.clearInterval(id)
-  }, [timerActive, secondsLeft, drill.length, submitDrill])
+  }, [timerActive, secondsLeft, drill.length])
 
   const saveScore = (score: number, total: number) => {
     const entry: ScoreEntry = {
@@ -112,6 +113,7 @@ function App() {
   }
 
   const startDrill = async () => {
+    autoSubmittedRef.current = false
     setDrillLoading(true)
     setSubmitted(false)
     setSelected({})
