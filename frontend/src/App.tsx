@@ -261,13 +261,20 @@ function App() {
                   <div key={q.id} className="rounded border p-3">
                     <p className="font-medium">{q.prompt}</p>
                     <ul className="mt-2 list-disc pl-5 text-gray-700">
-                      {q.options.map((opt) => (
-                        <li key={opt}>
-                          <button onClick={() => choose(q.id, opt)} className={selected[q.id] === opt ? 'font-semibold' : ''}>
-                            {opt}
-                          </button>
-                        </li>
-                      ))}
+                      {q.options.map((opt) => {
+                        let className = selected[q.id] === opt ? 'font-semibold' : ''
+                        if (submitted) {
+                          if (opt === q.answer) className = 'font-semibold text-green-700'
+                          else if (selected[q.id] === opt && opt !== q.answer) className = 'font-semibold text-red-700'
+                        }
+                        return (
+                          <li key={opt}>
+                            <button onClick={() => !submitted && choose(q.id, opt)} className={className} disabled={submitted}>
+                              {opt}
+                            </button>
+                          </li>
+                        )
+                      })}
                     </ul>
                     {submitted && (
                       <div className="mt-2 text-sm text-gray-600">
