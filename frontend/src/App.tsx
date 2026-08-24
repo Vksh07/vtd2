@@ -258,8 +258,8 @@ function App() {
                       <h3 className="font-medium">Topic Performance</h3>
                       {weak.length === 0 && strong.length === 0 && <p className="text-sm text-gray-500">Complete a topic drill to see weak/strong areas.</p>}
                       {weak.length > 0 && (
-                        <div>
-                          <p className="text-sm text-red-700">Weak areas</p>
+                        <div className="rounded border border-red-200 bg-red-50 p-2">
+                          <p className="text-sm font-medium text-red-700">Weak areas</p>
                           <ul className="mt-1 list-disc pl-5 text-gray-700">
                             {weak.map((item) => (
                               <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
@@ -268,8 +268,8 @@ function App() {
                         </div>
                       )}
                       {strong.length > 0 && (
-                        <div>
-                          <p className="text-sm text-green-700">Strong areas</p>
+                        <div className="rounded border border-green-200 bg-green-50 p-2">
+                          <p className="text-sm font-medium text-green-700">Strong areas</p>
                           <ul className="mt-1 list-disc pl-5 text-gray-700">
                             {strong.map((item) => (
                               <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
