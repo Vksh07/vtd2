@@ -255,7 +255,7 @@ function App() {
             <button onClick={startDrill} className="mt-4 ml-2 rounded bg-gray-900 px-4 py-2 text-white">
               {drillLoading ? 'Loading...' : 'Start Drill'}
             </button>
-            {drill.length > 0 && (
+            {drill.length > 0 ? (
               <div className="mt-4 space-y-3">
                 {drill.map((q) => (
                   <div key={q.id} className="rounded border p-3">
@@ -294,6 +294,8 @@ function App() {
                 )}
                 {csatError && <p className="text-sm text-red-600">{csatError}</p>}
               </div>
+            ) : (
+              <p className="mt-4 text-sm text-gray-500">Start a drill to see questions here.</p>
             )}
           </section>
         )}
