@@ -262,7 +262,10 @@ function App() {
                           <p className="text-sm font-medium text-red-700">Weak areas</p>
                           <ul className="mt-1 list-disc pl-5 text-gray-700">
                             {weak.map((item) => (
-                              <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
+                              <li key={item.topic}>
+                                <span>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</span>
+                                <button onClick={() => { setTopic(item.topic); setTab('csat'); }} className="ml-2 rounded border px-2 py-1 text-xs">Practice</button>
+                              </li>
                             ))}
                           </ul>
                         </div>
@@ -316,7 +319,10 @@ function App() {
                   <p className="text-sm font-medium text-red-700">Suggested focus</p>
                   <ul className="mt-1 list-disc pl-5 text-gray-700">
                     {weak.map((item) => (
-                      <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% — practice this topic</li>
+                      <li key={item.topic}>
+                        <span>{item.topic}: {Math.round(item.accuracy * 100)}% — practice this topic</span>
+                        <button onClick={() => { setTopic(item.topic); setTab('csat'); }} className="ml-2 rounded border px-2 py-1 text-xs">Practice</button>
+                      </li>
                     ))}
                   </ul>
                 </div>
