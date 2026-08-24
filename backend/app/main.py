@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import health, csat, csat_analysis, ethics, current_affairs, report, upi
+from app.routes import health, csat, csat_analysis, ethics, current_affairs, report, upi, pricing
 
 app = FastAPI(title="NeuroPrep API")
 
@@ -19,6 +19,7 @@ app.include_router(report.router, prefix="/report", tags=["report"])
 app.include_router(upi.router, prefix="", tags=["upi"])  
 app.include_router(ethics.router, prefix="/ethics", tags=["ethics"])  
 app.include_router(current_affairs.router, prefix="/current-affairs", tags=["current-affairs"])  
+app.include_router(pricing.router, prefix="/pricing", tags=["pricing"])  
 
 @app.get("/")
 def root():

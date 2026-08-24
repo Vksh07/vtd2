@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import HTTPException
+from app.services.telegram_notifier import telegram_notifier
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,9 @@ class UpiVerificationService:
             note="UPI payment screenshot received.",
         )
         self._records[record_id] = record
+        telegram_notifier.send(
+            f"🔔 New UPI verification submitted\nID: <code>{record_id}</code>\nFile: {file_name}"
+        )
         logger.info("UPI submission received id=%s hash=%s", record_id, file_hash)
         return record
 
