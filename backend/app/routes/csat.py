@@ -32,6 +32,11 @@ BANK = [
     DrillItem(id=13, topic="Percentages", prompt="A number increases by 20% and then decreases by 20%. Net change?", options=["0%", "-4%", "+4%", "-2%"], answer="B", explanation="Overall multiplier = 1.2 * 0.8 = 0.96, so -4%."),
     DrillItem(id=14, topic="Ratio", prompt="If A:B = 5:3 and B:C = 3:4, find A:C.", options=["5:4", "3:4", "5:3", "4:5"], answer="A", explanation="Common B=3 gives A:C = 5:4."),
     DrillItem(id=15, topic="Averages", prompt="Average of 3 numbers is 15. Sum is?", options=["30", "45", "60", "75"], answer="B", explanation="Sum = 15 * 3 = 45."),
+    DrillItem(id=16, topic="Averages", prompt="The average of 5 consecutive even numbers is 30. Largest number is?", options=["32", "34", "36", "38"], answer="B", explanation="Sum = 30*5 = 150; numbers are 26,28,30,32,34; largest = 34."),
+    DrillItem(id=17, topic="Time Speed Distance", prompt="Two trains 120 km apart move toward each other at 40 km/h and 60 km/h. Meeting time?", options=["1.2 h", "1.5 h", "2.0 h", "2.4 h"], answer="A", explanation="Relative speed = 100 km/h; time = 120/100 = 1.2 h."),
+    DrillItem(id=18, topic="Percentages", prompt="If a value decreases by 10% twice, total decrease is?", options=["19%", "20%", "21%", "22%"], answer="A", explanation="Multiplier = 0.9*0.9 = 0.81, so decrease = 19%."),
+    DrillItem(id=19, topic="Number System", prompt="Which number is divisible by both 3 and 4?", options=["22", "36", "45", "58"], answer="B", explanation="LCM of 3 and 4 is 12; 36 is divisible by 12."),
+    DrillItem(id=20, topic="Ratio", prompt="In a 40L mixture of milk:water = 3:1, how much water to add for 1:1 ratio?", options=["10 L", "15 L", "20 L", "25 L"], answer="C", explanation="Milk = 30L, water = 10L; need 30L water, so add 20L."),
 ]
 
 @router.post("/drill", response_model=list[DrillItem])
