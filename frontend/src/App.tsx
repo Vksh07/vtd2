@@ -57,15 +57,16 @@ function App() {
   const [csatError, setCsatError] = useState('')
   const [ethicsError, setEthicsError] = useState('')
   const [submittedOnce, setSubmittedOnce] = useState(false)
+  const [topicStats, setTopicStats] = useState<Record<string, {total:number, correct:number}>>({})
 
   useEffect(() => {
-    const stored = localStorage.getItem('neuroprep_scores')
+    const stored = localStorage.getItem('neuroprep_topic_stats')
     if (stored) {
-      try {
-        setHistory(JSON.parse(stored))
-      } catch {
-        setHistory([])
-      }
+      try { setTopicStats(JSON.parse(stored)) } catch { setTopicStats({}) }
+    }
+    const scores = localStorage.getItem('neuroprep_scores')
+    if (scores) {
+      try { setHistory(JSON.parse(scores)) } catch { setHistory([]) }
     }
     const profile = localStorage.getItem('neuroprep_profile')
     if (profile) {
@@ -105,6 +106,18 @@ function App() {
     const next = [entry, ...history].slice(0, 20)
     setHistory(next)
     localStorage.setItem('neuroprep_scores', JSON.stringify(next))
+    setTopicStats((prev) => {
+      const updated = { ...prev }
+      if (topic && topic !== 'General') {
+        const current = updated[topic] || { total: 0, correct: 0 }
+        updated[topic] = {
+          total: current.total + total,
+          correct: current.correct + score,
+        }
+      }
+      localStorage.setItem('neuroprep_topic_stats', JSON.stringify(updated))
+      return updated
+    })
   }
 
   const saveProfile = () => {
@@ -236,6 +249,37 @@ function App() {
                     ))}
                   </ul>
                 </div>
+                {(() => {
+                  const entries = Object.entries(topicStats).map(([topic, stat]) => ({ topic, total: stat.total, correct: stat.correct, accuracy: stat.total ? stat.correct / stat.total : 0 }))
+                  const weak = entries.filter(e => e.accuracy < 0.7).sort((a, b) => a.accuracy - b.accuracy).slice(0, 3)
+                  const strong = entries.filter(e => e.accuracy >= 0.7).sort((a, b) => b.accuracy - a.accuracy).slice(0, 3)
+                  return (
+                    <div className="mt-4 space-y-2">
+                      <h3 className="font-medium">Topic Performance</h3>
+                      {weak.length === 0 && strong.length === 0 && <p className="text-sm text-gray-500">Complete a topic drill to see weak/strong areas.</p>}
+                      {weak.length > 0 && (
+                        <div>
+                          <p className="text-sm text-red-700">Weak areas</p>
+                          <ul className="mt-1 list-disc pl-5 text-gray-700">
+                            {weak.map((item) => (
+                              <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {strong.length > 0 && (
+                        <div>
+                          <p className="text-sm text-green-700">Strong areas</p>
+                          <ul className="mt-1 list-disc pl-5 text-gray-700">
+                            {strong.map((item) => (
+                              <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
             )}
           </section>
