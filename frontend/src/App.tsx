@@ -223,13 +223,19 @@ function App() {
               {homeError && <p className="text-sm text-red-600">{homeError}</p>}
             </div>
             {history.length > 0 && (
-              <div className="mt-6">
-                <h3 className="font-medium">Recent Drills</h3>
-                <ul className="mt-2 list-disc pl-5 text-gray-700">
-                  {history.slice(0, 5).map((entry, idx) => (
-                    <li key={idx}>{entry.date}: {entry.score}/{entry.total}</li>
-                  ))}
-                </ul>
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center gap-4 text-sm text-gray-700">
+                  <span>Streak: {history.filter((entry, idx, arr) => idx === 0 || entry.date !== arr[idx - 1].date).length} days</span>
+                  <span>Best: {Math.max(...history.map((entry) => entry.score / entry.total)) * 100 | 0}%</span>
+                </div>
+                <div>
+                  <h3 className="font-medium">Recent Drills</h3>
+                  <ul className="mt-2 list-disc pl-5 text-gray-700">
+                    {history.slice(0, 5).map((entry, idx) => (
+                      <li key={idx}>{entry.date}: {entry.score}/{entry.total}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
           </section>
