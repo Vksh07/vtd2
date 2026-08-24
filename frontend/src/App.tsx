@@ -235,56 +235,60 @@ function App() {
               {profileSaved && <p className="text-sm text-gray-500">Profile saved locally.</p>}
               {homeError && <p className="text-sm text-red-600">{homeError}</p>}
             </div>
-            {history.length > 0 && (
-              <div className="mt-6 space-y-3">
-                <div className="flex items-center gap-4 text-sm text-gray-700">
-                  <span>Streak: {history.filter((entry, idx, arr) => idx === 0 || entry.date !== arr[idx - 1].date).length} days</span>
-                  <span>Best: {Math.max(...history.map((entry) => entry.score / entry.total)) * 100 | 0}%</span>
-                </div>
-                <div>
-                  <h3 className="font-medium">Recent Drills</h3>
-                  <ul className="mt-2 list-disc pl-5 text-gray-700">
-                    {history.slice(0, 5).map((entry, idx) => (
-                      <li key={idx}>{entry.date}: {entry.score}/{entry.total}</li>
-                    ))}
-                  </ul>
-                </div>
-                {(() => {
-                  const entries = Object.entries(topicStats).map(([topic, stat]) => ({ topic, total: stat.total, correct: stat.correct, accuracy: stat.total ? stat.correct / stat.total : 0 }))
-                  const weak = entries.filter(e => e.accuracy < 0.7).sort((a, b) => a.accuracy - b.accuracy).slice(0, 3)
-                  const strong = entries.filter(e => e.accuracy >= 0.7).sort((a, b) => b.accuracy - a.accuracy).slice(0, 3)
-                  return (
-                    <div className="mt-4 space-y-2">
-                      <h3 className="font-medium">Topic Performance</h3>
-                      {weak.length === 0 && strong.length === 0 && <p className="text-sm text-gray-500">Complete a topic drill to see weak/strong areas.</p>}
-                      {weak.length > 0 && (
-                        <div className="rounded border border-red-200 bg-red-50 p-2">
-                          <p className="text-sm font-medium text-red-700">Weak areas</p>
-                          <ul className="mt-1 list-disc pl-5 text-gray-700">
-                            {weak.map((item) => (
-                              <li key={item.topic}>
-                                <span>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</span>
-                                <button onClick={() => { setTopic(item.topic); setTab('csat'); }} className="ml-2 rounded border px-2 py-1 text-xs">Practice</button>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {strong.length > 0 && (
-                        <div className="rounded border border-green-200 bg-green-50 p-2">
-                          <p className="text-sm font-medium text-green-700">Strong areas</p>
-                          <ul className="mt-1 list-disc pl-5 text-gray-700">
-                            {strong.map((item) => (
-                              <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
+            <div className="mt-6 space-y-3">
+              {history.length === 0 ? (
+                <p className="text-sm text-gray-500">No drills yet. Start a CSAT drill to see your performance.</p>
+              ) : (
+                <>
+                  <div className="flex items-center gap-4 text-sm text-gray-700">
+                    <span>Streak: {history.filter((entry, idx, arr) => idx === 0 || entry.date !== arr[idx - 1].date).length} days</span>
+                    <span>Best: {Math.max(...history.map((entry) => entry.score / entry.total)) * 100 | 0}%</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Recent Drills</h3>
+                    <ul className="mt-2 list-disc pl-5 text-gray-700">
+                      {history.slice(0, 5).map((entry, idx) => (
+                        <li key={idx}>{entry.date}: {entry.score}/{entry.total}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  {(() => {
+                    const entries = Object.entries(topicStats).map(([topic, stat]) => ({ topic, total: stat.total, correct: stat.correct, accuracy: stat.total ? stat.correct / stat.total : 0 }))
+                    const weak = entries.filter(e => e.accuracy < 0.7).sort((a, b) => a.accuracy - b.accuracy).slice(0, 3)
+                    const strong = entries.filter(e => e.accuracy >= 0.7).sort((a, b) => b.accuracy - a.accuracy).slice(0, 3)
+                    return (
+                      <div className="mt-4 space-y-2">
+                        <h3 className="font-medium">Topic Performance</h3>
+                        {weak.length === 0 && strong.length === 0 && <p className="text-sm text-gray-500">Complete a topic drill to see weak/strong areas.</p>}
+                        {weak.length > 0 && (
+                          <div className="rounded border border-red-200 bg-red-50 p-2">
+                            <p className="text-sm font-medium text-red-700">Weak areas</p>
+                            <ul className="mt-1 list-disc pl-5 text-gray-700">
+                              {weak.map((item) => (
+                                <li key={item.topic}>
+                                  <span>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</span>
+                                  <button onClick={() => { setTopic(item.topic); setTab('csat'); }} className="ml-2 rounded border px-2 py-1 text-xs">Practice</button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {strong.length > 0 && (
+                          <div className="rounded border border-green-200 bg-green-50 p-2">
+                            <p className="text-sm font-medium text-green-700">Strong areas</p>
+                            <ul className="mt-1 list-disc pl-5 text-gray-700">
+                              {strong.map((item) => (
+                                <li key={item.topic}>{item.topic}: {Math.round(item.accuracy * 100)}% ({item.correct}/{item.total})</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
+                </>
+              )}
+            </div>
           </section>
         )}
         {tab === 'csat' && (
