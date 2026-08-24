@@ -135,10 +135,13 @@ function App() {
     setTimerActive(false)
     setCsatError('')
     try {
+      const entries = Object.entries(topicStats).map(([topic, stat]) => ({ topic, total: stat.total, correct: stat.correct, accuracy: stat.total ? stat.correct / stat.total : 0 }))
+      const weakTopics = entries.filter(e => e.accuracy < 0.7).map(e => e.topic)
+      const strongTopics = entries.filter(e => e.accuracy >= 0.7).map(e => e.topic)
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8001'}/csat/drill`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, count }),
+        body: JSON.stringify({ topic, count, weak_topics: weakTopics, strong_topics: strongTopics }),
       })
       if (!res.ok) throw new Error(`Drill failed: ${res.status}`)
       const data = await res.json()

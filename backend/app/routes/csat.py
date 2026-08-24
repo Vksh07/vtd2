@@ -7,6 +7,8 @@ router = APIRouter()
 class DrillRequest(BaseModel):
     topic: str
     count: int = 3
+    weak_topics: list[str] = []
+    strong_topics: list[str] = []
 
 class DrillItem(BaseModel):
     id: int
@@ -42,12 +44,40 @@ BANK = [
 @router.post("/drill", response_model=list[DrillItem])
 def generate_drill(req: DrillRequest):
     topic = (req.topic or "").strip().lower()
+    weak = [t.strip().lower() for t in req.weak_topics if t and t.strip()]
+    strong = [t.strip().lower() for t in req.strong_topics if t and t.strip()]
+
     if topic:
         filtered = [q for q in BANK if q.topic.lower() == topic]
-    else:
-        filtered = list(BANK)
-    if not filtered:
-        filtered = list(BANK)
+        if not filtered:
+            filtered = list(BANK)
+        count = max(1, min(req.count, len(filtered)))
+        return random.sample(filtered, count)
+
+    weak_items = [q for q in BANK if q.topic.lower() in weak]
+    strong_items = [q for q in BANK if q.topic.lower() in strong and q.topic.lower() not in weak]
+    general_items = [q for q in BANK if q.topic.lower() not in weak and q.topic.lower() not in strong]
+
+    if weak_items:
+        weak_count = max(1, int(round(req.count * 0.65)))
+        strong_count = max(0, int(round(req.count * 0.2)))
+        general_count = max(0, req.count - weak_count - strong_count)
+
+        selected = []
+        selected.extend(random.sample(weak_items, min(weak_count, len(weak_items))))
+        if strong_items:
+            selected.extend(random.sample(strong_items, min(strong_count, len(strong_items))))
+        if general_items:
+            selected.extend(random.sample(general_items, min(general_count, len(general_items))))
+
+        remaining = req.count - len(selected)
+        if remaining > 0:
+            pool = [q for q in BANK if q not in selected]
+            if pool:
+                selected.extend(random.sample(pool, min(remaining, len(pool))))
+
+        return selected[: req.count]
+
+    filtered = list(BANK)
     count = max(1, min(req.count, len(filtered)))
-    selected = random.sample(filtered, count)
-    return selected
+    return random.sample(filtered, count)
