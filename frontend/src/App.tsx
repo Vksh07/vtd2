@@ -280,6 +280,12 @@ function App() {
                     </ul>
                     {submitted && (
                       <div className="mt-2 text-sm text-gray-600">
+                        <p>
+                          Result:{' '}
+                          <span className={selected[q.id] === q.answer ? 'text-green-700' : 'text-red-700'}>
+                            {selected[q.id] === q.answer ? 'Correct' : 'Wrong'}
+                          </span>
+                        </p>
                         <p>Answer: {q.answer}</p>
                         <p>{q.explanation}</p>
                       </div>
